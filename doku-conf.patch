@@ -1,0 +1,70 @@
+--- dokuwiki-plugin-nssize-20080322/syntax.php	2010-07-28 23:10:41.962402125 +0300
++++ dokuwiki-plugin-nssize/syntax.php	2010-07-28 23:10:39.131984609 +0300
+@@ -28,45 +28,40 @@
+   function getSort(){    return 150;  }
+   function connectTo($mode) { $this->Lexer->addSpecialPattern('{{nssize>[^}]+}}',$mode,'plugin_nssize'); }
+   function handle($match, $state, $pos, &$handler) {
++    global $conf;
++
+     $subdir = substr($match,9,-2);
+     $subdir = str_replace(":","/",$subdir);
+-    $base = $this->getPwd();
+-    $base .= "/data/";
+ 
+     $message.= '<ul class="nssize">';
+     $message.= '<li class="nssize_title">'.$subdir.'</li>'.NL;
+     $total = 0;
+ 
+-    $pageDir   = $base.'pages/'.$subdir;
+-    $pageSize  = $this->getSize($pageDir);
++    $pageSize  = $this->getSize($conf['datadir'], $subdir);
+     $total    += $pageSize;
+     if ($this->getConf('display_pages')){
+       $message  .= $this->getFormatted("Pages",$pageSize);
+     }
+     
+-    $mediaDir  = $base.'media/'.$subdir;
+-    $mediaSize = $this->getSize($mediaDir);
++    $mediaSize = $this->getSize($conf['mediadir'], $subdir);
+     $total    += $mediaSize;
+     if ($this->getConf('display_media')==true){
+       $message  .= $this->getFormatted("Media",$mediaSize);
+     }
+ 
+-    $cacheDir  = $base.'cache/'.$subdir;
+-    $cacheSize = $this->getSize($cacheDir);
++    $cacheSize = $this->getSize($conf['cachedir'], $subdir);
+     $total    += $cacheSize;
+     if ($this->getConf('display_cache')==true){
+       $message  .= $this->getFormatted("Cache",$cacheSize);
+     }
+     
+-    $metaDir  = $base.'meta/'.$subdir;
+-    $metaSize = $this->getSize($metaDir);
++    $metaSize = $this->getSize($conf['metadir'], $subdir);
+     $total   += $metaSize;
+     if ($this->getConf('display_meta')==true){
+       $message .= $this->getFormatted("Meta",$metaSize);
+     }
+ 
+-    $atticDir  = $base.'attic/'.$subdir;
+-    $atticSize = $this->getSize($atticDir);
++    $atticSize = $this->getSize($conf['olddir'], $subdir);
+     $total    += $atticSize;    
+     if ($this->getConf('display_attic')==true){
+       $message  .= $this->getFormatted("Attic",$atticSize);
+@@ -86,12 +81,9 @@
+     }
+     return false;
+   }
+-  function getPwd(){
+-    $value = exec("pwd");
+-    return $value;
+-  }
+   
+-  function getSize($fullpath){
++  function getSize($basedir, $subdir) {
++    $fullpath = $basedir.'/'.$subdir;
+     $values = explode(" ",exec("du -k ".$fullpath));
+     $size = $values[0]/1024;
+     return $size;
