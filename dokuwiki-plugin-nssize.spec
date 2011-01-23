@@ -10,6 +10,7 @@ Source0:	http://wiki.symplus.com/_media/computer/source/nssize.zip
 URL:		http://www.dokuwiki.org/plugin:nssize
 Patch0:		doku-conf.patch
 BuildRequires:	rpmbuild(macros) >= 1.553
+BuildRequires:	unzip
 Requires:	dokuwiki >= 20061106
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
